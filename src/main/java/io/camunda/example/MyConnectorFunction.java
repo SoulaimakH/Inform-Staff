@@ -11,12 +11,13 @@ import io.camunda.example.dto.MyConnectorResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 
 @OutboundConnector(
     name = "MYCONNECTOR",
-    inputVariables = {"Flight_id,recipientEmail"},
+    inputVariables = {"recipientEmail"},
     type = "inform_staff")
 
 @ElementTemplate(
@@ -32,6 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
     },
     inputDataClass = MyConnectorRequest.class)
 public class MyConnectorFunction implements OutboundConnectorFunction {
+  private final MailService mailService;
+
+  @Autowired
+  public MyConnectorFunction(MailService mailService) {
+    this.mailService = mailService;
+  }
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MyConnectorFunction.class);
 
@@ -40,17 +47,18 @@ public class MyConnectorFunction implements OutboundConnectorFunction {
     final var connectorRequest = context.bindVariables(MyConnectorRequest.class);
     return executeConnector(connectorRequest);
   }
-  @Autowired
-  private MailService mailService;
+  
   private MyConnectorResult executeConnector(final MyConnectorRequest connectorRequest) {
     // TODO: implement connector logic
     LOGGER.info("Executing my connector with request {}", connectorRequest);
-    String Flight_id = connectorRequest.Flight_id();
+
     String recipientEmail = connectorRequest.recipientEmail();
+    System.out.println("this is the email : " +recipientEmail);
    /* if (message != null && message.toLowerCase().startsWith("fail")) {
       throw new ConnectorException("FAIL", "My property started with 'fail', was: " + message);
     }*/
-    mailService.sendEmail(recipientEmail, "Test Subject", "Flight id: "+Flight_id);
+
+    mailService.sendEmail(recipientEmail, "Test Subject", "Boarding Allowed");
     return new MyConnectorResult(recipientEmail);
   }
 }
