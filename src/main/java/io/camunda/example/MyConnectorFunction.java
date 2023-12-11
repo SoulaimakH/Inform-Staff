@@ -11,7 +11,8 @@ import io.camunda.example.dto.MyConnectorResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
 
 @OutboundConnector(
@@ -31,7 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
       @ElementTemplate.PropertyGroup(id = "compose", label = "Compose")
     },
     inputDataClass = MyConnectorRequest.class)
+
+@Component
+@SpringBootApplication
 public class MyConnectorFunction implements OutboundConnectorFunction {
+  MailService mailServiceInstance = new MailService();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MyConnectorFunction.class);
 
@@ -40,17 +45,17 @@ public class MyConnectorFunction implements OutboundConnectorFunction {
     final var connectorRequest = context.bindVariables(MyConnectorRequest.class);
     return executeConnector(connectorRequest);
   }
-  @Autowired
-  private MailService mailService;
+
   private MyConnectorResult executeConnector(final MyConnectorRequest connectorRequest) {
     // TODO: implement connector logic
     LOGGER.info("Executing my connector with request {}", connectorRequest);
     String Flight_id = connectorRequest.Flight_id();
     String recipientEmail = connectorRequest.recipientEmail();
+    String message=connectorRequest.message();
    /* if (message != null && message.toLowerCase().startsWith("fail")) {
       throw new ConnectorException("FAIL", "My property started with 'fail', was: " + message);
     }*/
-    mailService.sendEmail(recipientEmail, "Test Subject", "Flight id: "+Flight_id);
-    return new MyConnectorResult(recipientEmail);
+
+    return new MyConnectorResult("email received");
   }
 }

@@ -8,5 +8,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record MyConnectorRequest(
      @TemplateProperty(group = "compose", type = PropertyType.Text , label = "Flight_id") String Flight_id ,
-     @TemplateProperty(group = "compose", type = PropertyType.Text , label = "recipientEmail") String recipientEmail
+     @TemplateProperty(group = "compose", type = PropertyType.Text , label = "recipientEmail") String recipientEmail,
+     @TemplateProperty(group = "compose", type = PropertyType.Text , label = "message") String message
 ) {}
